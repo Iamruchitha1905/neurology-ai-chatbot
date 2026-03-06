@@ -1,0 +1,28 @@
+{% extends "chatbot/base.html" %}
+
+{% block title %}Login - Neurology AI Chatbot{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+    <div class="disclaimer">
+        This chatbot provides educational information only and should not replace professional medical advice.
+    </div>
+    <h2>Login</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in login_form %}
+        <div class="form-group">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.errors %}
+            <p class="error">{{ field.errors.as_text }}</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn">Login</button>
+    </form>
+    <p style="text-align: center; margin-top: 1rem;">
+        Don't have an account? <a href="{% url 'register' %}">Register here</a>
+    </p>
+</div>
+{% endblock %}

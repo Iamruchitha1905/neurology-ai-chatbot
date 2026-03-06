@@ -1,0 +1,7 @@
+django
+google-generativeai
+python-dotenv
+requests
+gunicorn
+whitenoise
+dj-database-url
