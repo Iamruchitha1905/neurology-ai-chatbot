@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,50 +8,105 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --bg: #f9fafb;
-            --text: #111827;
-            --text-muted: #6b7280;
+            --primary: #38bdf8;
+            --primary-hover: #0ea5e9;
+            --brain-deep: #020617;
+            --brain-glow: #0ea5e9;
             --white: #ffffff;
-            --border: #e5e7eb;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
+            background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
             color: var(--text);
             margin: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Neural Pulse Animation Layer */
+        .neural-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .pulse {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--brain-glow);
+            filter: blur(40px);
+            opacity: 0;
+            animation: neuralPulse 8s infinite;
+        }
+
+        @keyframes neuralPulse {
+            0% {
+                transform: scale(0.1);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0.15;
+            }
+
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
         }
 
         .navbar {
-            background-color: var(--white);
-            border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            z-index: 10;
         }
 
         .navbar-brand {
-            font-weight: 700;
+            font-weight: 800;
             font-size: 1.25rem;
             color: var(--primary);
             text-decoration: none;
+            letter-spacing: -0.025em;
+        }
+
+        .nav-links span {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-right: 1rem;
         }
 
         .nav-links a {
-            margin-left: 1.5rem;
+            margin-left: 1rem;
             text-decoration: none;
-            color: var(--text-muted);
-            font-weight: 500;
-            transition: color 0.2s;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s;
         }
 
         .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
             color: var(--primary);
         }
 
@@ -60,113 +116,175 @@
             max-width: 1200px;
             margin: 0 auto;
             width: 100%;
+            z-index: 1;
         }
 
         .auth-card {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2xl 4px -1px rgba(0, 0, 0, 0.06);
-            max-width: 400px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            padding: 2.5rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            max-width: 450px;
             margin: 4rem auto;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .auth-card h2 {
             margin-top: 0;
             margin-bottom: 1.5rem;
-            font-size: 1.5rem;
+            font-size: 1.75rem;
+            font-weight: 700;
             text-align: center;
         }
 
         .form-group {
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.6rem;
             font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-muted);
         }
 
         .form-group input {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: 6px;
+            padding: 0.85rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
             font-size: 1rem;
+            color: white;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .btn {
             display: inline-block;
             width: 100%;
-            padding: 0.75rem;
+            padding: 1rem;
             background-color: var(--primary);
-            color: var(--white);
+            color: white;
             border: none;
-            border-radius: 6px;
-            font-weight: 600;
+            border-radius: 10px;
+            font-weight: 700;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.3s;
             text-align: center;
             text-decoration: none;
+            font-size: 1rem;
         }
 
         .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4);
             background-color: var(--primary-hover);
         }
 
         .disclaimer {
-            background-color: #fee2e2;
-            color: #b91c1c;
-            padding: 0.75rem 1rem;
-            border-radius: 6px;
-            margin-bottom: 1.5rem;
-            font-size: 0.875rem;
+            background: rgba(244, 63, 94, 0.1);
+            color: #fda4af;
+            padding: 0.85rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            font-size: 0.8rem;
             text-align: center;
-            border: 1px solid #fecaca;
+            border: 1px solid rgba(244, 63, 94, 0.2);
         }
 
         .messages {
             list-style: none;
             padding: 0;
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .messages li {
-            padding: 0.75rem;
-            border-radius: 6px;
-            margin-bottom: 0.5rem;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            text-align: center;
         }
 
-        .success { background-color: #d1fae5; color: #065f46; }
-        .error { background-color: #fee2e2; color: #991b1b; }
-        .info { background-color: #dbeafe; color: #1e40af; }
+        .success {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .error {
+            background-color: rgba(244, 63, 94, 0.15);
+            color: #fda4af;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+        }
+
+        .info {
+            background-color: rgba(56, 189, 248, 0.15);
+            color: #7dd3fc;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
     </style>
 </head>
+
 <body>
+    <div class="neural-layer">
+        <div class="pulse" style="width: 400px; height: 400px; top: 10%; left: -5%; animation-delay: 0s;"></div>
+        <div class="pulse"
+            style="width: 300px; height: 300px; bottom: 10%; right: -5%; animation-delay: 3s; background: #06b6d4;">
+        </div>
+        <div class="pulse"
+            style="width: 250px; height: 250px; top: 40%; right: 20%; animation-delay: 5s; background: #2dd4bf;"></div>
+    </div>
     <nav class="navbar">
         <a href="/" class="navbar-brand">Neurology AI Chatbot</a>
         <div class="nav-links">
             {% if user.is_authenticated %}
-                <span>Welcome, {{ user.username }}</span>
-                <a href="{% url 'logout' %}">Logout</a>
+            <span>Welcome, {{ user.username }}</span>
+            <a href="{% url 'logout' %}">Logout</a>
             {% else %}
-                <a href="{% url 'login' %}">Login</a>
-                <a href="{% url 'register' %}">Register</a>
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'register' %}">Register</a>
             {% endif %}
         </div>
     </nav>
 
     <div class="container">
         {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li class="{{ message.tags }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
         {% endif %}
 
         {% block content %}{% endblock %}
     </div>
 </body>
+
 </html>
