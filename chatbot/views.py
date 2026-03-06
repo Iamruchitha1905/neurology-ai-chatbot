@@ -37,6 +37,9 @@ def get_medical_image(response_text):
             return f"/static/images/{img}"
     return None
 
+def landing(request):
+    return render(request, "chatbot/landing.html")
+
 @login_required
 def home(request):
     chats = Chat.objects.filter(user=request.user).order_by('timestamp')
