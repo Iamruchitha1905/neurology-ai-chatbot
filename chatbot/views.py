@@ -7,6 +7,9 @@ import google.generativeai as genai
 import requests
 import json
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434/api/generate")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "deepseek-r1:1.5b")
@@ -43,20 +46,33 @@ def home(request):
 def chat_view(request):
     if request.method == "POST":
         user_message = request.POST.get("message")
-        provider = request.POST.get("provider", "ollama") # Default to ollama
+        provider = request.POST.get("provider", "ollama")
+        fallback_used = False
         
         if not user_message:
             return JsonResponse({"error": "No message provided"}, status=400)
 
         try:
+            bot_response = None
+            
+            # Try Gemini first if requested
             if provider == "gemini":
                 if not gemini_model:
                     return JsonResponse({"error": "Gemini API key not configured."}, status=500)
-                full_prompt = f"{SYSTEM_PROMPT}\n\nUser: {user_message}"
-                response = gemini_model.generate_content(full_prompt)
-                bot_response = response.text
-            else:
-                # Use Ollama
+                try:
+                    full_prompt = f"{SYSTEM_PROMPT}\n\nUser: {user_message}"
+                    response = gemini_model.generate_content(full_prompt)
+                    bot_response = response.text
+                except Exception as g_e:
+                    # Check for quota error (429)
+                    if "429" in str(g_e) or "quota" in str(g_e).lower():
+                        provider = "ollama" # Fallback to Ollama
+                        fallback_used = True
+                    else:
+                        raise g_e # Re-throw other Gemini errors
+
+            # Use Ollama (either directly or as fallback)
+            if provider == "ollama":
                 payload = {
                     "model": OLLAMA_MODEL,
                     "prompt": f"{SYSTEM_PROMPT}\n\nUser: {user_message}\nAssistant:",
@@ -74,7 +90,8 @@ def chat_view(request):
 
             return JsonResponse({
                 "response": bot_response,
-                "image_url": image_url
+                "image_url": image_url,
+                "fallback_used": fallback_used
             })
         except Exception as e:
             return JsonResponse({"error": f"{provider.capitalize()} Error: {str(e)}"}, status=500)

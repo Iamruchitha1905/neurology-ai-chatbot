@@ -116,6 +116,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 chatMessages.appendChild(botDiv);
+
+                if (data.fallback_used) {
+                    const statusMsg = document.createElement('div');
+                    statusMsg.style.fontSize = '0.75rem';
+                    statusMsg.style.color = '#6b7280';
+                    statusMsg.style.textAlign = 'center';
+                    statusMsg.style.marginTop = '4px';
+                    statusMsg.style.marginBottom = '8px';
+                    statusMsg.textContent = "(Gemini quota exceeded. Switched to local Ollama)";
+                    chatMessages.appendChild(statusMsg);
+                }
+
                 speak(data.response);
             } else if (data.error) {
                 const errorDiv = document.createElement('div');
