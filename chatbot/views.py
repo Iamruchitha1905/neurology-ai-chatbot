@@ -34,6 +34,9 @@ def get_medical_image(response_text):
             return f"/static/images/{img}"
     return None
 
+# AI Provider Configuration
+AI_PROVIDER = os.environ.get("AI_PROVIDER", "gemini" if GEMINI_API_KEY else "ollama")
+
 @login_required
 def home(request):
     chats = Chat.objects.filter(user=request.user).order_by('timestamp')
@@ -47,13 +50,14 @@ def chat_view(request):
             return JsonResponse({"error": "No message provided"}, status=400)
 
         try:
-            if gemini_model:
-                # Use Gemini if available
+            if AI_PROVIDER == "gemini" and gemini_model:
+                # Use Gemini
                 full_prompt = f"{SYSTEM_PROMPT}\n\nUser: {user_message}"
                 response = gemini_model.generate_content(full_prompt)
                 bot_response = response.text
+                error_prefix = "Gemini Error"
             else:
-                # Fallback to Ollama
+                # Use Ollama
                 payload = {
                     "model": OLLAMA_MODEL,
                     "prompt": f"{SYSTEM_PROMPT}\n\nUser: {user_message}\nAssistant:",
@@ -62,6 +66,7 @@ def chat_view(request):
                 response = requests.post(OLLAMA_URL, json=payload, timeout=30)
                 response_data = response.json()
                 bot_response = response_data.get("response", "Sorry, I encountered an error.")
+                error_prefix = "Ollama Error"
 
             # Save to database
             Chat.objects.create(user=request.user, message=user_message, response=bot_response)
@@ -73,5 +78,6 @@ def chat_view(request):
                 "image_url": image_url
             })
         except Exception as e:
-            return JsonResponse({"error": f"Ollama Error: {str(e)}. Make sure Ollama is running locally."}, status=500)
+            provider_name = "Gemini" if AI_PROVIDER == "gemini" and gemini_model else "Ollama"
+            return JsonResponse({"error": f"{provider_name} Error: {str(e)}"}, status=500)
     return JsonResponse({"error": "Invalid request"}, status=400)
