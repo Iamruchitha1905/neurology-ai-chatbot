@@ -22,7 +22,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-r=cqglpzy$=mbcgbh8$v6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',') + ['127.0.0.1', 'localhost', '.render.com']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'neurology-ai-chatbot.onrender.com').split(',') + ['127.0.0.1', 'localhost', '.render.com']
 
 
 # Application definition
