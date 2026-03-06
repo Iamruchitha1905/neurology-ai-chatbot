@@ -2,22 +2,12 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .models import Chat
-from django.conf import settings
-import google.generativeai as genai
 import requests
 import json
 import os
 
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434/api/generate")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "deepseek-r1:1.5b")
-
-# Configure Gemini if key is provided
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY") or getattr(settings, 'GEMINI_API_KEY', None)
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-    gemini_model = genai.GenerativeModel('gemini-2.0-flash')
-else:
-    gemini_model = None
 
 SYSTEM_PROMPT = "You are a neurology medical assistant. Only answer questions related to neurology such as brain disorders, nervous system diseases, symptoms, and treatments. If the question is unrelated politely refuse. Keep your answers concise and professional."
 
@@ -34,9 +24,6 @@ def get_medical_image(response_text):
             return f"/static/images/{img}"
     return None
 
-# AI Provider Configuration
-AI_PROVIDER = os.environ.get("AI_PROVIDER", "gemini" if GEMINI_API_KEY else "ollama")
-
 @login_required
 def home(request):
     chats = Chat.objects.filter(user=request.user).order_by('timestamp')
@@ -50,23 +37,16 @@ def chat_view(request):
             return JsonResponse({"error": "No message provided"}, status=400)
 
         try:
-            if AI_PROVIDER == "gemini" and gemini_model:
-                # Use Gemini
-                full_prompt = f"{SYSTEM_PROMPT}\n\nUser: {user_message}"
-                response = gemini_model.generate_content(full_prompt)
-                bot_response = response.text
-                error_prefix = "Gemini Error"
-            else:
-                # Use Ollama
-                payload = {
-                    "model": OLLAMA_MODEL,
-                    "prompt": f"{SYSTEM_PROMPT}\n\nUser: {user_message}\nAssistant:",
-                    "stream": False
-                }
-                response = requests.post(OLLAMA_URL, json=payload, timeout=30)
-                response_data = response.json()
-                bot_response = response_data.get("response", "Sorry, I encountered an error.")
-                error_prefix = "Ollama Error"
+            # Use Ollama
+            payload = {
+                "model": OLLAMA_MODEL,
+                "prompt": f"{SYSTEM_PROMPT}\n\nUser: {user_message}\nAssistant:",
+                "stream": False
+            }
+            response = requests.post(OLLAMA_URL, json=payload, timeout=30)
+            response.raise_for_status()
+            response_data = response.json()
+            bot_response = response_data.get("response", "Sorry, I encountered an error.")
 
             # Save to database
             Chat.objects.create(user=request.user, message=user_message, response=bot_response)
@@ -78,6 +58,5 @@ def chat_view(request):
                 "image_url": image_url
             })
         except Exception as e:
-            provider_name = "Gemini" if AI_PROVIDER == "gemini" and gemini_model else "Ollama"
-            return JsonResponse({"error": f"{provider_name} Error: {str(e)}"}, status=500)
+            return JsonResponse({"error": f"Ollama Error: {str(e)}"}, status=500)
     return JsonResponse({"error": "Invalid request"}, status=400)
