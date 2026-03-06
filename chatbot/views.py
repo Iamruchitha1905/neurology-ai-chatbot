@@ -47,6 +47,7 @@ def chat_view(request):
     if request.method == "POST":
         user_message = request.POST.get("message")
         provider = request.POST.get("provider", "ollama")
+        selected_model = request.POST.get("model", "gemini-2.0-flash")
         fallback_used = False
         
         if not user_message:
@@ -57,11 +58,13 @@ def chat_view(request):
             
             # Try Gemini first if requested
             if provider == "gemini":
-                if not gemini_model:
+                if not GEMINI_API_KEY:
                     return JsonResponse({"error": "Gemini API key not configured."}, status=500)
                 try:
+                    # Dynamically initialize model
+                    current_model = genai.GenerativeModel(selected_model)
                     full_prompt = f"{SYSTEM_PROMPT}\n\nUser: {user_message}"
-                    response = gemini_model.generate_content(full_prompt)
+                    response = current_model.generate_content(full_prompt)
                     bot_response = response.text
                 except Exception as g_e:
                     # Check for quota error (429)

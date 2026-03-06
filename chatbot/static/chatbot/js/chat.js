@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const toggleBtns = document.querySelectorAll('.toggle-btn');
 
+    const modelSelect = document.getElementById('gemini-model-select');
+
     let isTtsEnabled = true;
     let currentProvider = 'ollama';
 
@@ -17,6 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentProvider = btn.dataset.provider;
+
+            // Show/Hide model selector for Gemini
+            if (currentProvider === 'gemini') {
+                modelSelect.style.display = 'block';
+            } else {
+                modelSelect.style.display = 'none';
+            }
         });
     });
 
@@ -93,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData();
             formData.append('message', message);
             formData.append('provider', currentProvider);
+            formData.append('model', document.getElementById('gemini-model-select').value);
             formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
 
             const response = await fetch('/chat/', {
