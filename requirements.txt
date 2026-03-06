@@ -1,4 +1,5 @@
 django
+google-generativeai
 python-dotenv
 requests
 gunicorn

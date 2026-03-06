@@ -35,6 +35,31 @@
         background-color: #f3f4f6;
     }
 
+    .ai-toggle {
+        display: flex;
+        background: #e5e7eb;
+        padding: 4px;
+        border-radius: 8px;
+        gap: 4px;
+    }
+
+    .toggle-btn {
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .toggle-btn.active {
+        background: var(--white);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        color: var(--primary);
+    }
+
     .message {
         max-width: 80%;
         padding: 0.75rem 1rem;
@@ -138,13 +163,19 @@
 <div class="chat-container">
     <div class="chat-header">
         <h3 style="margin: 0;">Neurology Assistant</h3>
-        <button id="tts-toggle" class="icon-btn" title="Toggle Text-to-Speech">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-            </svg>
-        </button>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="ai-toggle">
+                <button type="button" class="toggle-btn active" data-provider="ollama">Ollama</button>
+                <button type="button" class="toggle-btn" data-provider="gemini">Gemini</button>
+            </div>
+            <button id="tts-toggle" class="icon-btn" title="Toggle Text-to-Speech">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+            </button>
+        </div>
     </div>
 
     <div class="chat-messages" id="chat-messages">

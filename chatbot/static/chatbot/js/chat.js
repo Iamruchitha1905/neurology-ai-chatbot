@@ -6,7 +6,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const voiceBtn = document.getElementById('voice-btn');
     const ttsToggle = document.getElementById('tts-toggle');
 
+    const toggleBtns = document.querySelectorAll('.toggle-btn');
+
     let isTtsEnabled = true;
+    let currentProvider = 'ollama';
+
+    // Handle Toggle
+    toggleBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            toggleBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentProvider = btn.dataset.provider;
+        });
+    });
 
     // Scroll to bottom
     const scrollToBottom = () => {
@@ -80,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const formData = new FormData();
             formData.append('message', message);
+            formData.append('provider', currentProvider);
             formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
 
             const response = await fetch('/chat/', {
